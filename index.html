@@ -1,445 +1,151 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<meta name="theme-color" content="#081114" />
-<meta name="description" content="Птицелов Remastered — современная браузерная игра о ловле и коллекционировании птиц" />
-<title>Птицелов Remastered</title>
-<style>
-:root{
-  --bg:#081114;
-  --bg2:#0d1c20;
-  --panel:rgba(16,27,31,.84);
-  --panel-strong:rgba(12,20,24,.92);
-  --soft:#b5c6bf;
-  --text:#f7f2e5;
-  --gold:#d9bb73;
-  --gold2:#f1d89a;
-  --green:#42e09a;
-  --blue:#46b4ff;
-  --line:rgba(255,255,255,.09);
-  --shadow:0 20px 65px rgba(0,0,0,.34);
-  --radius:24px;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:radial-gradient(circle at top,#17343e 0%,#081114 42%,#071013 100%);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;overflow-x:hidden}
-body::before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 20% 0%,rgba(70,180,255,.08),transparent 30%),radial-gradient(circle at 80% 15%,rgba(217,187,115,.08),transparent 24%);pointer-events:none}
-a{text-decoration:none;color:inherit} img{display:block;max-width:100%} button{border:0;background:none;color:inherit;font:inherit;cursor:pointer}
-.app{min-height:100vh;position:relative}
-.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:rgba(7,16,19,.78);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:12px;user-select:none;cursor:pointer}
-.brand-mark{display:grid;place-items:center;width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,#f4dc99,#8c5e1f);color:#162126;font-size:24px;box-shadow:0 10px 25px rgba(217,187,115,.24)}
-.brand-title{font-weight:900;text-transform:uppercase;letter-spacing:.75px;line-height:.95}
-.brand-title small{display:block;font-size:10px;color:var(--gold2);letter-spacing:1.8px;margin-top:5px}
-.hud{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:center}
-.pill{display:flex;align-items:center;gap:8px;min-height:38px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);backdrop-filter:blur(10px);font-weight:800}
-.pill b{color:var(--gold2)}
-.nav{display:flex;gap:8px;overflow:auto}
-.nav button{padding:11px 14px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.045);font-weight:800;white-space:nowrap;transition:.18s}
-.nav button.active,.nav button:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.14)}
-.screen{display:none;max-width:1520px;margin:0 auto;padding:24px 20px 42px}
-.screen.active{display:block}
-.hero{position:relative;overflow:hidden;border-radius:34px;min-height:690px;border:1px solid var(--line);background:linear-gradient(90deg,rgba(5,11,14,.92) 0%,rgba(5,11,14,.70) 42%,rgba(5,11,14,.18) 100%),url('assets/images/hero-bg.jpg') center/cover no-repeat;box-shadow:var(--shadow)}
-.hero::after{content:"";position:absolute;inset:auto 0 0;height:35%;background:linear-gradient(transparent,rgba(7,16,19,.95))}
-.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1.07fr .93fr;min-height:690px;gap:18px;padding:clamp(20px,4vw,54px)}
-.badge{display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border-radius:999px;border:1px solid rgba(241,216,154,.23);background:rgba(0,0,0,.16);color:var(--gold2);font-weight:900;font-size:12px;letter-spacing:1.5px;text-transform:uppercase}
-.hero h1{max-width:660px;margin:18px 0 12px;font-size:clamp(42px,6vw,86px);line-height:.92;letter-spacing:-2px;text-transform:uppercase;text-shadow:0 8px 24px rgba(0,0,0,.3)}
-.hero p{max-width:620px;margin:0;color:#d7e4db;font-size:clamp(15px,2vw,20px);line-height:1.6}
-.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
-.primary,.secondary,.danger{min-height:50px;padding:14px 20px;border-radius:15px;border:1px solid transparent;font-weight:900;transition:transform .18s,filter .18s,background .18s}
-.primary{background:linear-gradient(135deg,#47e39b,#16965f);color:#032016;box-shadow:0 12px 24px rgba(66,224,154,.25)}
-.secondary{background:rgba(255,255,255,.06);border-color:var(--line)}
-.danger{background:linear-gradient(135deg,#f17e75,#b83c3c)}
-.primary:hover,.secondary:hover,.danger:hover{transform:translateY(-2px);filter:brightness(1.04)}
-.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:30px;max-width:760px}
-.hero-stat{padding:14px;border-radius:18px;border:1px solid var(--line);background:rgba(0,0,0,.18);backdrop-filter:blur(10px)}
-.hero-stat strong{display:block;font-size:25px;margin-bottom:4px;color:#fff}
-.hero-showcase{display:grid;align-self:end;grid-template-columns:repeat(2,1fr);gap:12px}
-.hero-portrait{position:relative;overflow:hidden;border-radius:26px;border:1px solid var(--line);min-height:290px;background:rgba(0,0,0,.25);cursor:pointer;transition:.18s}
-.hero-portrait:hover,.hero-portrait.selected{transform:translateY(-2px);border-color:rgba(70,180,255,.45);box-shadow:0 0 0 2px rgba(70,180,255,.12)}
-.hero-portrait .photo{position:absolute;inset:0;background:center/cover no-repeat}
-.hero-portrait::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent,rgba(7,16,19,.92))}
-.hero-portrait .overlay{position:absolute;inset:auto 0 0;padding:16px;z-index:2}
-.hero-portrait h3{margin:0 0 3px;font-size:26px}
-.hero-portrait p{margin:0;color:#d2ddd6;font-size:13px;line-height:1.4}
-.section-title{display:flex;align-items:end;justify-content:space-between;gap:14px;margin:34px 0 16px}
-.section-title h2,.back-row h1{margin:0;font-size:clamp(26px,3vw,38px);letter-spacing:-.7px}
-.section-title p,.muted{margin:0;color:var(--soft)}
-.feature-grid,.route-grid,.bird-grid,.shop-grid,.quest-grid,.hero-grid{display:grid;gap:14px}
-.feature-grid{grid-template-columns:repeat(4,1fr)}
-.feature{padding:18px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,rgba(18,31,36,.85),rgba(10,18,22,.92));box-shadow:var(--shadow);min-height:152px}
-.feature .icon{font-size:30px}
-.feature h3{margin:12px 0 8px}
-.feature p{margin:0;color:var(--soft);font-size:13px;line-height:1.52}
-.panel{padding:20px;border:1px solid var(--line);border-radius:26px;background:linear-gradient(180deg,rgba(16,28,33,.92),rgba(10,18,22,.96));box-shadow:var(--shadow)}
-.route-grid{grid-template-columns:repeat(5,1fr)}
-.route-card{border:1px solid var(--line);border-radius:24px;overflow:hidden;background:rgba(255,255,255,.04);cursor:pointer;transition:.18s}
-.route-card:hover,.route-card.selected{transform:translateY(-2px);border-color:rgba(241,216,154,.45);box-shadow:0 0 0 2px rgba(241,216,154,.1)}
-.route-card .photo{height:168px;background:center/cover no-repeat}
-.route-card .body{padding:14px}
-.route-card h3{margin:0 0 6px}
-.route-card p{margin:0;color:var(--soft);font-size:13px;line-height:1.45}
-.game-layout{display:grid;grid-template-columns:1fr 340px;gap:16px}
-.game-board{position:relative;overflow:hidden;border-radius:28px;border:1px solid var(--line);background:#0d171a;box-shadow:var(--shadow)}
-#gameCanvas{display:block;width:100%;height:auto;min-height:420px;touch-action:none;background:#102227}
-.hud-overlay{position:absolute;inset:0;pointer-events:none}
-.canvas-info{position:absolute;left:18px;top:18px;padding:12px 14px;border-radius:18px;border:1px solid rgba(255,255,255,.1);background:rgba(6,13,16,.34);backdrop-filter:blur(12px);box-shadow:var(--shadow)}
-.canvas-info b{display:block;font-size:20px}
-.mobile-controls{position:absolute;inset:0;pointer-events:none;z-index:7}
-.joystick{position:absolute;left:18px;bottom:18px;width:132px;height:132px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);backdrop-filter:blur(8px);pointer-events:auto;touch-action:none}
-.stick{position:absolute;left:50%;top:50%;width:58px;height:58px;margin-left:-29px;margin-top:-29px;border-radius:50%;background:rgba(255,255,255,.22);box-shadow:0 8px 20px rgba(0,0,0,.18)}
-.action-btn{position:absolute;right:18px;bottom:22px;width:102px;height:102px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.2),rgba(255,255,255,.08));display:grid;place-items:center;font-weight:900;backdrop-filter:blur(10px);pointer-events:auto;touch-action:none;box-shadow:var(--shadow)}
-.action-btn span{display:block;font-size:13px;text-transform:uppercase;letter-spacing:1.2px;text-align:center}
-.game-overlay{position:absolute;inset:0;display:grid;place-items:center;padding:20px;background:rgba(7,16,19,.42);backdrop-filter:blur(4px);z-index:6}
-.game-overlay.hidden{display:none}
-.start-card{width:min(480px,100%);padding:30px;border:1px solid rgba(241,216,154,.22);border-radius:28px;background:rgba(8,15,18,.88);box-shadow:var(--shadow);text-align:center}
-.start-card h2{margin:12px 0 7px;font-size:34px}
-.start-card p{margin:0;color:var(--soft);line-height:1.58}
-.game-side{display:flex;flex-direction:column;gap:14px}
-.game-side h3{margin:0 0 8px;font-size:28px}
-.game-side p{margin:0;color:var(--soft);line-height:1.52}
-.timer-box{display:flex;align-items:center;justify-content:space-between;margin:16px 0;padding:14px;border-radius:16px;background:rgba(255,255,255,.05)}
-.timer-box strong{font-size:31px;color:var(--gold2)}
-.side-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.side-stat{padding:10px;border-radius:14px;background:rgba(255,255,255,.05);color:var(--soft);font-size:12px}
-.side-stat b{display:block;color:#fff;font-size:18px;margin-top:4px}
-.tip{padding:15px;border-left:3px solid var(--gold);border-radius:0 14px 14px 0;background:rgba(217,187,115,.09);color:#dbe7de;font-size:13px;line-height:1.55}
-.back-row{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px}
-.bird-grid{grid-template-columns:repeat(4,1fr)}
-.bird-card{position:relative;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:24px;background:rgba(255,255,255,.04);box-shadow:var(--shadow);min-height:352px;transition:.18s}
-.bird-card:hover{transform:translateY(-2px)}
-.bird-card.locked{filter:grayscale(1);opacity:.72}
-.bird-card .photo{aspect-ratio:4/3;background:center/cover no-repeat}
-.bird-card .body{display:flex;flex-direction:column;gap:8px;padding:15px;flex:1}
-.bird-card h3{margin:0;font-size:20px}
-.bird-card p{margin:0;color:var(--soft);font-size:13px;line-height:1.45}
-.rarity{position:absolute;top:12px;right:12px;padding:6px 10px;border-radius:999px;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);font-size:11px;font-weight:900;letter-spacing:.35px}
-.bird-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:6px;font-size:13px;color:var(--soft)}
-.bird-foot b{color:#fff}
-.hero-grid{grid-template-columns:repeat(4,1fr)}
-.hero-card{display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:26px;background:rgba(255,255,255,.04);box-shadow:var(--shadow);transition:.18s;cursor:pointer}
-.hero-card:hover,.hero-card.selected{transform:translateY(-2px);border-color:rgba(70,180,255,.45);box-shadow:0 0 0 2px rgba(70,180,255,.1), var(--shadow)}
-.hero-card .photo{height:320px;background:center/cover no-repeat}
-.hero-card .body{padding:16px}
-.hero-card h3{margin:0 0 4px;font-size:26px}
-.hero-card p{margin:0;color:var(--soft);line-height:1.5;font-size:13px}
-.badge-bonus{display:inline-flex;margin-top:12px;padding:7px 10px;border-radius:999px;border:1px solid rgba(66,224,154,.22);background:rgba(66,224,154,.08);color:#a7f3cc;font-weight:800;font-size:12px}
-.mini-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
-.mini-stat{padding:10px;border-radius:14px;background:rgba(255,255,255,.045);font-size:12px;color:var(--soft)}
-.mini-stat b{display:block;color:#fff;font-size:18px;margin-top:4px}
-.shop-grid{grid-template-columns:repeat(3,1fr)}
-.shop-card,.quest-card{padding:18px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(18,31,36,.85),rgba(10,18,22,.92));box-shadow:var(--shadow)}
-.shop-card{display:flex;flex-direction:column;min-height:270px}
-.shop-card .icon{display:grid;place-items:center;width:76px;height:76px;border-radius:20px;background:rgba(255,255,255,.06);font-size:40px}
-.shop-card h3{margin:16px 0 6px}
-.shop-card p{margin:0;color:var(--soft);font-size:13px;line-height:1.5}
-.shop-card .primary{margin-top:auto;width:100%}
-.quest-grid{grid-template-columns:repeat(2,1fr)}
-.quest-card.done{border-color:rgba(66,224,154,.36)}
-.quest-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.quest-head h3{margin:0 0 5px}
-.quest-head p{margin:0;color:var(--soft);font-size:13px;line-height:1.45}
-.reward{white-space:nowrap;font-size:13px;font-weight:900;color:var(--gold2)}
-.progress{margin:16px 0 10px;height:9px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
-.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--blue))}
-.quest-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--soft);font-size:12px}
-.footer{padding:26px 20px 38px;text-align:center;color:var(--soft);font-size:12px}
-.result{position:fixed;inset:0;z-index:80;display:none;place-items:center;padding:20px;background:rgba(0,0,0,.68);backdrop-filter:blur(8px)}
-.result.open{display:grid}
-.result-card{width:min(440px,100%);padding:30px;border-radius:28px;border:1px solid rgba(241,216,154,.22);background:linear-gradient(180deg,rgba(16,28,33,.98),rgba(10,18,22,.98));box-shadow:var(--shadow);text-align:center}
-.result-card h2{margin:10px 0 6px;font-size:34px}
-.score{margin:18px 0;font-size:48px;font-weight:900;color:var(--gold2)}
-.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);opacity:0;pointer-events:none;z-index:90;padding:12px 18px;border-radius:999px;border:1px solid var(--line);background:rgba(7,16,19,.96);backdrop-filter:blur(12px);font-size:13px;font-weight:900;box-shadow:var(--shadow);transition:.22s}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-@media (max-width:1280px){.hero-inner,.game-layout{grid-template-columns:1fr}.route-grid{grid-template-columns:repeat(3,1fr)}.bird-grid{grid-template-columns:repeat(3,1fr)}.hero-grid{grid-template-columns:repeat(2,1fr)}.feature-grid{grid-template-columns:repeat(2,1fr)}.shop-grid,.quest-grid{grid-template-columns:repeat(2,1fr)}.hero-showcase{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:860px){.topbar{flex-wrap:wrap;padding:12px 14px}.nav{order:3;width:100%}.screen{padding:18px 14px 34px}.hero{min-height:auto}.hero-inner{padding:18px}.hero-stats,.hero-showcase,.feature-grid,.route-grid,.bird-grid,.hero-grid,.shop-grid,.quest-grid{grid-template-columns:1fr}.back-row{display:block}.back-row .secondary{margin-top:12px}.joystick{width:118px;height:118px}.action-btn{width:92px;height:92px}.hero-stat strong{font-size:22px}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <meta name="theme-color" content="#071316" />
+  <meta name="description" content="Птицелов Deluxe — браузерная игра на Phaser" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Птицелов Deluxe</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class="app">
-  <header class="topbar">
-    <div class="brand" data-go="home">
-      <div class="brand-mark">🪶</div>
-      <div class="brand-title">Птицелов<small>Remastered Edition</small></div>
+  <div id="boot-screen" class="boot-screen">
+    <div class="boot-card">
+      <div class="boot-logo">🪶</div>
+      <div class="boot-title">ПТИЦЕЛОВ</div>
+      <div class="boot-sub">DELUXE EDITION</div>
+      <div class="boot-progress"><i id="boot-progress"></i></div>
+      <div class="boot-status" id="boot-status">Подготовка экспедиции…</div>
     </div>
-    <div class="hud">
-      <div class="pill">🪙 <b id="coinsHud">0</b></div>
-      <div class="pill">🌾 <b id="feedHud">0</b></div>
-      <div class="pill">⭐ <b id="levelHud">1</b></div>
-      <div class="pill">🐦 <b id="speciesHud">0/8</b></div>
-    </div>
-    <nav class="nav">
-      <button data-go="home">Главная</button>
-      <button data-go="game">Маршрут</button>
-      <button data-go="collection">Птицы</button>
-      <button data-go="heroes">Герои</button>
-      <button data-go="shop">Магазин</button>
-      <button data-go="quests">Квесты</button>
-    </nav>
-  </header>
-
-  <section id="screen-home" class="screen active">
-    <div class="hero">
-      <div class="hero-inner">
-        <div>
-          <div class="badge">современная браузерная мини‑игра · телефон + пк</div>
-          <h1>Максимально мощный «Птицелов» для браузера</h1>
-          <p>Выбирай героя, отправляйся в красивые локации, бегай по карте с сачком, лови птиц с физикой движения и собирай коллекцию с фотореалистичными карточками. Всё работает прямо в браузере и сохраняется на устройстве.</p>
-          <div class="cta">
-            <button class="primary" data-go="game">▶ Играть сейчас</button>
-            <button class="secondary" data-go="heroes">Выбрать героя</button>
-            <button class="secondary" data-go="collection">Посмотреть птиц</button>
-          </div>
-          <div class="hero-stats">
-            <div class="hero-stat"><strong id="homeCaught">0</strong>всего поймано</div>
-            <div class="hero-stat"><strong id="homeSpecies">0/8</strong>видов открыто</div>
-            <div class="hero-stat"><strong id="homeBest">0</strong>лучший рейд</div>
-            <div class="hero-stat"><strong id="homeHero">Серёжа</strong>активный герой</div>
-          </div>
-        </div>
-        <div class="hero-showcase" id="homeHeroShowcase"></div>
-      </div>
-    </div>
-
-    <div class="section-title"><div><h2>Что прокачано в версии Remastered</h2><p>Новый UI, выбор героев, карточки птиц, красивые локации и реальная игровая сцена.</p></div></div>
-    <div class="feature-grid">
-      <div class="feature"><div class="icon">🧍</div><h3>4 героя с фото</h3><p>Выбор героя вынесен в отдельный экран и на главный экран. Бонусы реально влияют на игру.</p></div>
-      <div class="feature"><div class="icon">🌄</div><h3>5 атмосферных локаций</h3><p>Каждая локация имеет собственный фон, визуальное настроение и набор встречающихся птиц.</p></div>
-      <div class="feature"><div class="icon">🐦</div><h3>Фотореалистичные птицы</h3><p>В коллекции и в игровом процессе используются фото‑карточки птиц вместо абстрактных заглушек.</p></div>
-      <div class="feature"><div class="icon">🎮</div><h3>Движение и физика</h3><p>Есть бег героя по карте, виртуальный джойстик на телефоне, сачок, инерция птиц, отталкивания и частицы.</p></div>
-    </div>
-  </section>
-
-  <section id="screen-game" class="screen">
-    <div class="back-row"><div><h1>Экспедиция</h1><div class="muted">Бегай героем по локации и лови птиц сачком. На ПК — WASD/стрелки + пробел. На телефоне — джойстик и кнопка «Ловить».</div></div><button class="secondary" data-go="heroes">Сменить героя</button></div>
-    <div class="route-grid" id="routeGrid"></div>
-    <div style="height:16px"></div>
-    <div class="game-layout">
-      <div class="game-board">
-        <canvas id="gameCanvas" width="1280" height="720"></canvas>
-        <div class="hud-overlay">
-          <div class="canvas-info"><b id="overlayRouteName">Сосновый лес</b><span id="overlayHeroName">Герой: Серёжа</span></div>
-        </div>
-        <div class="mobile-controls">
-          <div class="joystick" id="joystick"><div class="stick" id="stick"></div></div>
-          <button class="action-btn" id="actionBtn"><span>Ловить</span></button>
-        </div>
-        <div class="game-overlay" id="startOverlay"><div class="start-card"><div style="font-size:52px">🪶</div><h2>Готов к охоте?</h2><p>У тебя 60 секунд. Беги к птицам и лови их сачком. Приманка повышает шанс редкой добычи, а герой усиливает твой стиль игры.</p><div class="cta" style="justify-content:center"><button class="primary" id="startBtn">Начать экспедицию</button></div></div></div>
-      </div>
-      <aside class="game-side">
-        <div class="panel"><h3 id="routeName">Сосновый лес</h3><p id="routeDesc">Лёгкий стартовый маршрут с лесными птицами.</p><div class="timer-box"><span>Осталось времени</span><strong id="timer">60</strong></div><div class="side-stats"><div class="side-stat">Улов<b id="caughtStat">0</b></div><div class="side-stat">Монеты<b id="earnedStat">0</b></div><div class="side-stat">Комбо<b id="comboStat">x0</b></div><div class="side-stat">Приманка<b id="lureStat">нет</b></div></div></div>
-        <button class="primary" id="lureBtn">🌾 Использовать приманку</button>
-        <div class="tip">Совет: активный герой — <b id="heroTipName">Серёжа</b>. Лови птиц сериями, чтобы разгонять комбо и повышать итоговый заработок.</div>
-      </aside>
-    </div>
-  </section>
-
-  <section id="screen-collection" class="screen">
-    <div class="back-row"><div><h1>Коллекция птиц</h1><div class="muted">Открыто видов: <span id="collectionCount">0</span> из 8</div></div><button class="secondary" data-go="game">На экспедицию →</button></div>
-    <div class="bird-grid" id="birdGrid"></div>
-  </section>
-
-  <section id="screen-heroes" class="screen">
-    <div class="back-row"><div><h1>Выбор героя</h1><div class="muted">Выбери, кто будет главным птицеловом.</div></div><button class="secondary" data-go="game">Играть →</button></div>
-    <div class="hero-grid" id="heroGrid"></div>
-  </section>
-
-  <section id="screen-shop" class="screen">
-    <div class="back-row"><div><h1>Магазин</h1><div class="muted">Расходники и улучшения, которые усиливают следующий рейд.</div></div><button class="secondary" data-go="game">На экспедицию →</button></div>
-    <div class="shop-grid" id="shopGrid"></div>
-  </section>
-
-  <section id="screen-quests" class="screen">
-    <div class="back-row"><div><h1>Квесты</h1><div class="muted">Выполняй задания и забирай монеты.</div></div><button class="secondary" data-go="game">Играть →</button></div>
-    <div class="quest-grid" id="questGrid"></div>
-  </section>
-
-  <footer class="footer">Птицелов Remastered · полностью автономная браузерная игра · всё сохраняется в браузере через localStorage</footer>
-</div>
-
-<div class="result" id="resultModal">
-  <div class="result-card">
-    <div style="font-size:54px">🏆</div>
-    <h2>Экспедиция завершена</h2>
-    <div class="score" id="resultScore">+0</div>
-    <p class="muted" id="resultText">Поймано птиц: 0</p>
-    <div class="cta" style="justify-content:center"><button class="primary" id="resultBtn">Продолжить</button></div>
   </div>
-</div>
-<div class="toast" id="toast"></div>
 
-<script>
-'use strict';
-const STORAGE_KEY='pticelov_remastered_v1';
-const $=id=>document.getElementById(id);
+  <div id="app" class="app hidden">
+    <header class="topbar">
+      <button class="brand" data-screen="home" aria-label="Главная">
+        <span class="brand-mark">🪶</span>
+        <span class="brand-copy"><b>Птицелов</b><small>Deluxe Edition</small></span>
+      </button>
+      <div class="hud-pills">
+        <span>🪙 <b id="coinsHud">0</b></span>
+        <span>🌾 <b id="feedHud">0</b></span>
+        <span>⭐ <b id="levelHud">1</b></span>
+        <span>🐦 <b id="speciesHud">0/8</b></span>
+      </div>
+      <nav class="nav">
+        <button data-screen="home">Главная</button>
+        <button data-screen="heroes">Герои</button>
+        <button data-screen="locations">Локации</button>
+        <button data-screen="collection">Коллекция</button>
+        <button data-screen="shop">Магазин</button>
+        <button data-screen="quests">Квесты</button>
+      </nav>
+      <button id="soundToggle" class="sound-btn" title="Звук">🔊</button>
+    </header>
 
-const BIRDS=[
-  {id:'sinica',name:'Синица',rarity:'Обычная',reward:60,xp:22,size:42,speed:1.12,image:'assets/images/bird-sinica.png',desc:'Юркая и частая лесная птица.'},
-  {id:'vorobey',name:'Воробей',rarity:'Обычная',reward:68,xp:24,size:40,speed:1.15,image:'assets/images/bird-vorobey.png',desc:'Проворный, но привычный трофей.'},
-  {id:'schegol',name:'Щегол',rarity:'Редкая',reward:130,xp:54,size:45,speed:1.22,image:'assets/images/bird-schegol.png',desc:'Яркий окрас и заметная награда.'},
-  {id:'snegir',name:'Снегирь',rarity:'Редкая',reward:160,xp:66,size:47,speed:1.1,image:'assets/images/bird-snegir.png',desc:'Зимний красавец с красной грудкой.'},
-  {id:'sviristel',name:'Свиристель',rarity:'Эпическая',reward:290,xp:118,size:50,speed:1.08,image:'assets/images/bird-sviristel.png',desc:'Элегантная редкая птица с хохолком.'},
-  {id:'dyatel',name:'Дятел',rarity:'Эпическая',reward:250,xp:112,size:48,speed:1.2,image:'assets/images/bird-dyatel.png',desc:'Крепкий лесной трофей, часто держится у стволов.'},
-  {id:'sova',name:'Сова',rarity:'Эпическая',reward:340,xp:146,size:56,speed:0.98,image:'assets/images/bird-sova.png',desc:'Тяжёлая ночная охотница с ценным уловом.'},
-  {id:'zimorodok',name:'Зимородок',rarity:'Легендарная',reward:540,xp:235,size:46,speed:1.32,image:'assets/images/bird-zimorodok.png',desc:'Один из самых дорогих и редких трофеев.'}
-];
+    <main>
+      <section id="home" class="screen active home-screen">
+        <div class="home-hero">
+          <div class="home-shade"></div>
+          <div class="home-copy">
+            <div class="eyebrow">PHASER · WEBGL · ARCADE PHYSICS</div>
+            <h1>Лови. Собирай.<br>Развивайся.</h1>
+            <p>Полноценная браузерная мини‑игра: выбор героя, красивые локации, физика птиц, комбо, улучшения, редкие трофеи, мобильный джойстик, звуки и сохранение прогресса.</p>
+            <div class="home-actions">
+              <button class="primary xl" id="playNowBtn">▶ Играть</button>
+              <button class="secondary xl" data-screen="heroes">Выбрать героя</button>
+            </div>
+            <div class="home-stats">
+              <div><b id="homeCaught">0</b><span>поймано</span></div>
+              <div><b id="homeSpecies">0/8</b><span>видов</span></div>
+              <div><b id="homeBest">0</b><span>лучший рейд</span></div>
+              <div><b id="homeHero">Серёжа</b><span>активный герой</span></div>
+            </div>
+          </div>
+          <div id="homeHeroCards" class="home-heroes"></div>
+        </div>
+        <div class="feature-row">
+          <article><span>🎮</span><h3>Настоящий геймплей</h3><p>Движение героя, сачок, столкновения, уклонение птиц и динамическая камера.</p></article>
+          <article><span>🌦️</span><h3>Живые локации</h3><p>Туман, снег, дождь, частицы и разная атмосфера у каждого маршрута.</p></article>
+          <article><span>🐦</span><h3>Коллекционирование</h3><p>Редкость, награды, фото птиц, счётчик улова и легендарные встречи.</p></article>
+          <article><span>📱</span><h3>Телефон + ПК</h3><p>WASD/стрелки и пробел на ПК, джойстик и кнопка ловли на смартфоне.</p></article>
+        </div>
+      </section>
 
-const HEROES=[
-  {id:'sergey',name:'Серёжа',role:'Универсал',bonus:'Баланс скорости, опыта и дохода',image:'assets/images/char-sergey.jpg',desc:'Надёжный герой, одинаково полезный на всех маршрутах.',mods:{coins:1,xp:1,rare:1,move:1,combo:1}},
-  {id:'kazak',name:'Казак',role:'Следопыт',bonus:'+20% монет за редких и эпических птиц',image:'assets/images/char-kazak.jpg',desc:'Охотится за более дорогой добычей и сильнее монетизирует редкие поимки.',mods:{coins:1.2,xp:1,rare:1.12,move:1,combo:1}},
-  {id:'docent',name:'Доцент',role:'Исследователь',bonus:'+24% опыта и чуть выше шанс редких встреч',image:'assets/images/char-docent.jpg',desc:'Оптимален для быстрого роста уровня и исследования коллекции.',mods:{coins:1,xp:1.24,rare:1.06,move:1,combo:1}},
-  {id:'vitalya',name:'Виталя',role:'Скоростной',bonus:'+12% скорость героя и усиление комбо',image:'assets/images/char-vitalya.jpg',desc:'Самый подвижный герой, отлично раскрывается в активной ловле.',mods:{coins:1,xp:1,rare:1.02,move:1.12,combo:1.35}}
-];
+      <section id="heroes" class="screen">
+        <div class="screen-head"><div><div class="eyebrow">КОМАНДА</div><h2>Выбери героя</h2><p>Бонус героя реально меняет стиль игры.</p></div><button class="primary" data-screen="locations">Дальше →</button></div>
+        <div id="heroGrid" class="hero-grid"></div>
+      </section>
 
-const ROUTES=[
-  {id:'forest',name:'Сосновый лес',image:'assets/images/loc-forest.jpg',desc:'Лёгкая стартовая локация с частыми лесными видами.',birds:['sinica','vorobey','schegol','dyatel'],tint:'#90c17d'},
-  {id:'river',name:'Река',image:'assets/images/loc-river.jpg',desc:'Берег с шансом на зимородка и быструю добычу.',birds:['sinica','vorobey','schegol','zimorodok'],tint:'#72c0df'},
-  {id:'mountains',name:'Горы',image:'assets/images/loc-mountains.jpg',desc:'Сложный, но выгодный холодный маршрут.',birds:['snegir','dyatel','sova','schegol'],tint:'#b2c2d6'},
-  {id:'swamp',name:'Болото',image:'assets/images/loc-swamp.jpg',desc:'Густая местность с нестандартными редкими встречами.',birds:['sinica','sviristel','sova','zimorodok'],tint:'#92b17a'},
-  {id:'winter',name:'Зимний лес',image:'assets/images/loc-winter.jpg',desc:'Снежная локация с красивыми и дорогими птицами.',birds:['snegir','sviristel','sova','vorobey'],tint:'#d8ecff'}
-];
+      <section id="locations" class="screen">
+        <div class="screen-head"><div><div class="eyebrow">МАРШРУТ</div><h2>Выбери локацию</h2><p>У каждой свой набор птиц, погода и сложность.</p></div><button class="primary" id="startFromLocationsBtn">Начать рейд</button></div>
+        <div id="locationGrid" class="location-grid"></div>
+      </section>
 
-const QUESTS=[
-  {id:'catch12',title:'Разминка птицелова',desc:'Поймай 12 любых птиц',target:12,reward:320,progress:()=>totalCaught()},
-  {id:'species4',title:'Наблюдатель',desc:'Открой 4 разных вида',target:4,reward:420,progress:()=>unlockedSpecies()},
-  {id:'earn3000',title:'Хорошая вылазка',desc:'Заработай 3000 монет суммарно',target:3000,reward:700,progress:()=>state.totalCoinsEarned},
-  {id:'rare5',title:'Редкая коллекция',desc:'Поймай 5 редких птиц или выше',target:5,reward:900,progress:()=>['schegol','snegir','sviristel','dyatel','sova','zimorodok'].reduce((a,id)=>a+(state.caught[id]||0),0)}
-];
+      <section id="collection" class="screen">
+        <div class="screen-head"><div><div class="eyebrow">ПОЛЕВОЙ ЖУРНАЛ</div><h2>Коллекция птиц</h2><p>Открыто <b id="collectionCount">0</b> из 8 видов.</p></div><button class="primary" data-screen="locations">На маршрут →</button></div>
+        <div id="birdGrid" class="bird-grid"></div>
+      </section>
 
-const SHOP=[
-  {id:'feed1',name:'Обычная приманка',icon:'🌾',cost:180,desc:'Даёт 1 приманку. Во время действия выше шанс редкой птицы.',buy(){if(state.coins<180)return false;state.coins-=180;state.feed+=1;return true;}},
-  {id:'feed3',name:'Набор приманок',icon:'🧺',cost:480,desc:'Сразу 3 приманки по более выгодной цене.',buy(){if(state.coins<480)return false;state.coins-=480;state.feed+=3;return true;}},
-  {id:'net',name:'Улучшить сачок',icon:'🕸️',cost(){return 850+state.netLevel*450;},desc:'Увеличивает радиус захвата птиц и немного сокращает кулдаун.',buy(){const c=850+state.netLevel*450;if(state.coins<c)return false;state.coins-=c;state.netLevel+=1;return 'net';}}
-];
+      <section id="shop" class="screen">
+        <div class="screen-head"><div><div class="eyebrow">СНАРЯЖЕНИЕ</div><h2>Магазин</h2><p>Покупай приманку и улучшай характеристики.</p></div></div>
+        <div id="shopGrid" class="shop-grid"></div>
+      </section>
 
-const DEFAULT_STATE={coins:1200,feed:3,level:1,xp:0,hero:'sergey',route:'forest',netLevel:1,caught:{},bestRun:0,totalCoinsEarned:0,claimed:{}};
-let state=loadState();
-const canvas=$('gameCanvas');
-const ctx=canvas.getContext('2d');
-const imageCache={};
-const keys={};
-const joystick={active:false,startX:0,startY:0,x:0,y:0};
-const game={running:false,birds:[],particles:[],texts:[],time:60,lastTs:0,spawn:0,caught:0,earned:0,combo:0,lure:0,bg:null,wind:0,player:{x:640,y:560,vx:0,vy:0,facing:1,swing:0,cooldown:0,catchApplied:false}};
+      <section id="quests" class="screen">
+        <div class="screen-head"><div><div class="eyebrow">ЗАДАНИЯ</div><h2>Квесты</h2><p>Выполняй цели и забирай монеты.</p></div></div>
+        <div id="questGrid" class="quest-grid"></div>
+      </section>
 
-function loadState(){try{const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');return data?{...DEFAULT_STATE,...data,caught:data.caught||{},claimed:data.claimed||{}}:{...DEFAULT_STATE};}catch{return {...DEFAULT_STATE};}}
-function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
-function hero(){return HEROES.find(h=>h.id===state.hero)||HEROES[0];}
-function route(){return ROUTES.find(r=>r.id===state.route)||ROUTES[0];}
-function birdById(id){return BIRDS.find(b=>b.id===id);}
-function totalCaught(){return Object.values(state.caught).reduce((a,b)=>a+b,0);} 
-function unlockedSpecies(){return BIRDS.filter(b=>(state.caught[b.id]||0)>0).length;}
-function xpNeed(){return state.level*550;}
-function rarityColor(r){return r==='Легендарная'?'#ffc465':r==='Эпическая'?'#d79bff':r==='Редкая'?'#7ad8ff':'#d7dfcf';}
-function gainXP(v){state.xp+=Math.round(v*hero().mods.xp);while(state.xp>=xpNeed()){state.xp-=xpNeed();state.level++;toast('Новый уровень: '+state.level);}}
+      <section id="game-screen" class="screen game-screen">
+        <div id="game-wrap" class="game-wrap">
+          <div id="phaser-game"></div>
+          <div class="game-top-ui">
+            <button id="exitGameBtn" class="glass-btn">← Выйти</button>
+            <div class="run-info"><b id="runLocation">Лес</b><span id="runHero">Серёжа</span></div>
+            <div class="run-stats">
+              <span>⏱ <b id="runTime">60</b></span>
+              <span>🐦 <b id="runCaught">0</b></span>
+              <span>🔥 <b id="runCombo">x0</b></span>
+              <span>🪙 <b id="runCoins">0</b></span>
+            </div>
+          </div>
+          <div class="game-bottom-ui">
+            <div class="joystick" id="joystick"><i id="joystickKnob"></i></div>
+            <div class="game-actions">
+              <button id="lureGameBtn" class="round-action lure"><span>🌾</span><small>Приманка</small><b id="lureCount">0</b></button>
+              <button id="catchGameBtn" class="round-action catch"><span>🕸️</span><small>Ловить</small></button>
+            </div>
+          </div>
+          <div id="countdown" class="countdown hidden"></div>
+          <div id="run-result" class="run-result hidden">
+            <div class="result-card">
+              <div class="trophy">🏆</div>
+              <h2>Экспедиция завершена</h2>
+              <div class="result-number" id="resultCoins">+0 🪙</div>
+              <div class="result-lines">
+                <span>Поймано <b id="resultCaught">0</b></span>
+                <span>Новых видов <b id="resultNewSpecies">0</b></span>
+                <span>Макс. комбо <b id="resultCombo">x0</b></span>
+              </div>
+              <div class="result-actions"><button class="primary" id="againBtn">Ещё рейд</button><button class="secondary" id="resultHomeBtn">В меню</button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
 
-async function preloadAssets(){const all=['assets/images/hero-bg.jpg',...BIRDS.map(x=>x.image),...HEROES.map(x=>x.image),...ROUTES.map(x=>x.image)];await Promise.all(all.map(src=>new Promise(res=>{const img=new Image();img.onload=()=>res();img.onerror=()=>res();img.src=src;imageCache[src]=img;})));applyRoute(false);renderAll();requestAnimationFrame(loop);} 
+  <div id="toast" class="toast"></div>
+  <div id="phaser-error" class="phaser-error hidden">
+    <div><h2>Не удалось загрузить игровой движок</h2><p>Для первого запуска нужен интернет, потому что Phaser загружается с CDN. На GitHub Pages это происходит автоматически.</p><button onclick="location.reload()" class="primary">Повторить</button></div>
+  </div>
 
-function setScreen(name){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id==='screen-'+name));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.go===name));}
-function renderHud(){ $('coinsHud').textContent=state.coins; $('feedHud').textContent=state.feed; $('levelHud').textContent=state.level; $('speciesHud').textContent=unlockedSpecies()+'/8'; $('homeCaught').textContent=totalCaught(); $('homeSpecies').textContent=unlockedSpecies()+'/8'; $('homeBest').textContent=state.bestRun; $('homeHero').textContent=hero().name; $('collectionCount').textContent=unlockedSpecies(); $('overlayHeroName').textContent='Герой: '+hero().name; $('heroTipName').textContent=hero().name; }
-
-function renderHomeHeroes(){ $('homeHeroShowcase').innerHTML=HEROES.map(h=>`<div class="hero-portrait ${h.id===state.hero?'selected':''}" data-hero="${h.id}"><div class="photo" style="background-image:url('${h.image}')"></div><div class="overlay"><h3>${h.name}</h3><p>${h.role} · ${h.bonus}</p></div></div>`).join(''); $('homeHeroShowcase').querySelectorAll('[data-hero]').forEach(el=>el.onclick=()=>selectHero(el.dataset.hero)); }
-
-function renderHeroes(){ $('heroGrid').innerHTML=HEROES.map(h=>`<div class="hero-card ${h.id===state.hero?'selected':''}" data-hero="${h.id}"><div class="photo" style="background-image:url('${h.image}')"></div><div class="body"><h3>${h.name}</h3><p>${h.desc}</p><div class="badge-bonus">${h.bonus}</div><div class="mini-stats"><div class="mini-stat">Роль<b>${h.role}</b></div><div class="mini-stat">Сачок<b>ур. ${state.netLevel}</b></div></div></div></div>`).join(''); $('heroGrid').querySelectorAll('[data-hero]').forEach(el=>el.onclick=()=>selectHero(el.dataset.hero)); }
-
-function renderBirds(){ $('birdGrid').innerHTML=BIRDS.map(b=>{const count=state.caught[b.id]||0;return `<div class="bird-card ${count?'':'locked'}"><div class="rarity" style="color:${rarityColor(b.rarity)}">${b.rarity}</div><div class="photo" style="background-image:url('${b.image}')"></div><div class="body"><h3>${b.name}</h3><p>${count?b.desc:'Поймай эту птицу хотя бы один раз, чтобы открыть карточку.'}</p><div class="bird-foot"><span>Награда: <b>${b.reward}</b></span><span>${count?('x'+count):'???'}</span></div></div></div>`;}).join(''); }
-
-function renderRoutes(){ $('routeGrid').innerHTML=ROUTES.map(r=>`<div class="route-card ${r.id===state.route?'selected':''}" data-route="${r.id}"><div class="photo" style="background-image:url('${r.image}')"></div><div class="body"><h3>${r.name}</h3><p>${r.desc}</p></div></div>`).join(''); $('routeGrid').querySelectorAll('[data-route]').forEach(el=>el.onclick=()=>{state.route=el.dataset.route; applyRoute(true); saveState(); renderRoutes();}); }
-
-function renderShop(){ $('shopGrid').innerHTML=SHOP.map(it=>{const cost=typeof it.cost==='function'?it.cost():it.cost; return `<div class="shop-card"><div class="icon">${it.icon}</div><h3>${it.name}</h3><p>${it.desc}</p><div class="badge-bonus" style="margin-top:14px">Цена: ${cost} монет</div><button class="primary" data-buy="${it.id}">Купить</button></div>`;}).join(''); $('shopGrid').querySelectorAll('[data-buy]').forEach(btn=>btn.onclick=()=>buyItem(btn.dataset.buy)); }
-
-function renderQuests(){ $('questGrid').innerHTML=QUESTS.map(q=>{const p=Math.min(q.target,q.progress());const done=p>=q.target;const claimed=!!state.claimed[q.id];return `<div class="quest-card ${done?'done':''}"><div class="quest-head"><div><h3>${q.title}</h3><p>${q.desc}</p></div><div class="reward">+${q.reward} 🪙</div></div><div class="progress"><i style="width:${(p/q.target)*100}%"></i></div><div class="quest-foot"><span>${p}/${q.target}</span>${done&&!claimed?`<button class="primary" data-claim="${q.id}" style="min-height:38px;padding:8px 12px">Забрать</button>`:claimed?'<span style="color:#a9f3cb;font-weight:800">Получено</span>':'<span>В процессе</span>'}</div></div>`;}).join(''); $('questGrid').querySelectorAll('[data-claim]').forEach(btn=>btn.onclick=()=>claimQuest(btn.dataset.claim)); }
-
-function renderAll(){renderHud();renderHomeHeroes();renderHeroes();renderBirds();renderRoutes();renderShop();renderQuests();updateSideInfo();}
-
-function selectHero(id){state.hero=id;saveState();renderAll();toast('Выбран герой: '+hero().name);} 
-function applyRoute(notify){game.bg=imageCache[route().image]; $('routeName').textContent=route().name; $('overlayRouteName').textContent=route().name; $('routeDesc').textContent=route().desc; updateSideInfo(); if(notify)toast('Локация: '+route().name);} 
-function updateSideInfo(){ $('timer').textContent=Math.ceil(game.time); $('caughtStat').textContent=game.caught; $('earnedStat').textContent=game.earned; $('comboStat').textContent='x'+game.combo; $('lureStat').textContent=game.lure>0?'активна':'нет'; }
-
-function buyItem(id){const item=SHOP.find(x=>x.id===id); if(!item) return; const res=item.buy(); if(!res){toast('Недостаточно монет'); return;} saveState(); renderAll(); toast(res==='net'?'Сачок улучшен':'Покупка успешна'); }
-function claimQuest(id){const q=QUESTS.find(x=>x.id===id); if(!q||state.claimed[id]||q.progress()<q.target) return; state.claimed[id]=true; state.coins+=q.reward; saveState(); renderAll(); toast('Квест выполнен: +'+q.reward+' монет'); }
-
-function startRun(){game.running=true; game.time=60; game.spawn=0; game.caught=0; game.earned=0; game.combo=0; game.lure=0; game.birds=[]; game.particles=[]; game.texts=[]; Object.assign(game.player,{x:640,y:560,vx:0,vy:0,facing:1,swing:0,cooldown:0,catchApplied:false}); $('startOverlay').classList.add('hidden'); updateSideInfo();}
-function finishRun(){game.running=false; state.coins+=game.earned; state.totalCoinsEarned+=game.earned; if(game.caught>state.bestRun) state.bestRun=game.caught; saveState(); renderAll(); $('resultScore').textContent='+'+game.earned+' 🪙'; $('resultText').textContent=`Поймано птиц: ${game.caught} · Герой: ${hero().name}`; $('resultModal').classList.add('open'); }
-function useLure(){if(!game.running){toast('Сначала начни экспедицию');return;} if(state.feed<=0){toast('Приманка закончилась');return;} state.feed-=1; game.lure=8; saveState(); renderHud(); updateSideInfo(); toast('Приманка активирована на 8 секунд'); }
-
-function weightedBird(){const arr=[]; route().birds.forEach(id=>{const bird=birdById(id); let weight=bird.rarity==='Обычная'?6:bird.rarity==='Редкая'?3.2:bird.rarity==='Эпическая'?1.7:0.8; weight*=hero().mods.rare; if(game.lure>0 && bird.rarity!=='Обычная') weight*=2.2; for(let i=0;i<Math.ceil(weight*2);i++) arr.push(bird);}); return arr[Math.floor(Math.random()*arr.length)]; }
-function spawnBird(){const b=weightedBird(); const margin=90; const edge=Math.floor(Math.random()*4); let x,y; if(edge===0){x=Math.random()*canvas.width;y=-40;} else if(edge===1){x=canvas.width+40;y=Math.random()*canvas.height*.65;} else if(edge===2){x=Math.random()*canvas.width;y=80+Math.random()*canvas.height*.4;} else {x=-40;y=Math.random()*canvas.height*.65;} const angle=Math.random()*Math.PI*2; const speed=(1.1+Math.random()*0.9)*b.speed; game.birds.push({id:Math.random().toString(36).slice(2), data:b, x,y, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed*.6, targetX:Math.random()*(canvas.width-margin*2)+margin, targetY:120+Math.random()*(canvas.height-300), flap:Math.random()*6.28, caught:false}); }
-
-function addParticles(x,y,color,count=16){for(let i=0;i<count;i++){game.particles.push({x,y,vx:(Math.random()-0.5)*7,vy:(Math.random()-0.5)*7,r:2+Math.random()*4,life:1,color});}}
-function addFloatText(x,y,text,color='#fff'){game.texts.push({x,y,text,color,life:1});}
-
-function triggerCatch(){const p=game.player; if(!game.running||p.cooldown>0||p.swing>0) return; p.swing=.32; p.cooldown=Math.max(.28,.58-state.netLevel*0.04); p.catchApplied=false; }
-function applyCatch(){const p=game.player; if(p.catchApplied) return; p.catchApplied=true; const reach=86+state.netLevel*12; const arcY=-12; let caughtNow=0; const canCatch=[];
-  game.birds.forEach(b=>{const dx=b.x-p.x; const dy=b.y-(p.y+arcY); const dirOk=(dx*p.facing)>-20; const d=Math.hypot(dx,dy); if(d<reach && dirOk) canCatch.push({b,d});});
-  canCatch.sort((a,b)=>a.d-b.d).slice(0,3).forEach(({b})=>catchBird(b));
-  if(canCatch.length===0){game.combo=0; updateSideInfo();}
-}
-
-function catchBird(b){ if(b.caught) return; b.caught=true; const rareBonus=(b.data.rarity==='Обычная'?1:hero().mods.coins); const comboMult=1+Math.min(.7, game.combo*0.06*hero().mods.combo); const coins=Math.round(b.data.reward*rareBonus*comboMult); const xp=Math.round(b.data.xp*(1+Math.min(.45,game.combo*0.04))*hero().mods.combo);
-  game.caught++; game.combo=Math.min(15,game.combo+1); game.earned+=coins; state.caught[b.data.id]=(state.caught[b.data.id]||0)+1; gainXP(xp); addParticles(b.x,b.y,b.data.rarity==='Легендарная'?'#ffcf67':b.data.rarity==='Эпическая'?'#cb9cff':'#8fe2ff',20); addFloatText(b.x,b.y-20,'+'+coins+' 🪙'); toast('Поймана птица: '+b.data.name); renderHud(); renderBirds(); renderQuests(); updateSideInfo(); saveState(); }
-
-function update(dt){ if(game.running){game.time-=dt; if(game.time<=0){game.time=0; updateSideInfo(); finishRun();} game.spawn-=dt; if(game.spawn<=0 && game.birds.length<14){spawnBird(); game.spawn=.55+Math.random()*.5;} if(game.lure>0) game.lure=Math.max(0,game.lure-dt);} 
-  // player control
-  const p=game.player; let inputX=0, inputY=0; if(keys['ArrowLeft']||keys['a']||keys['A']) inputX-=1; if(keys['ArrowRight']||keys['d']||keys['D']) inputX+=1; if(keys['ArrowUp']||keys['w']||keys['W']) inputY-=1; if(keys['ArrowDown']||keys['s']||keys['S']) inputY+=1; if(joystick.active){inputX+=joystick.x; inputY+=joystick.y;} const len=Math.hypot(inputX,inputY)||1; inputX/=len; inputY/=len;
-  const speed=610*hero().mods.move; const accel=8; p.vx+=((inputX*speed)-p.vx)*Math.min(1,accel*dt); p.vy+=((inputY*speed)-p.vy)*Math.min(1,accel*dt); if(Math.abs(inputX)>0.05) p.facing=inputX>=0?1:-1; p.x+=p.vx*dt; p.y+=p.vy*dt; p.x=Math.max(75,Math.min(canvas.width-75,p.x)); p.y=Math.max(110,Math.min(canvas.height-72,p.y)); if(p.cooldown>0) p.cooldown=Math.max(0,p.cooldown-dt); if(p.swing>0){ const before=p.swing; p.swing=Math.max(0,p.swing-dt); if(before>.16 && p.swing<=.16) applyCatch(); }
-
-  // birds movement
-  game.wind+=dt*.35;
-  game.birds.forEach((b,idx)=>{
-    b.flap+=dt*(6+b.data.speed*2.5);
-    const dxTarget=b.targetX-b.x, dyTarget=b.targetY-b.y; const dist=Math.hypot(dxTarget,dyTarget);
-    if(dist<40 || Math.random()<0.003){b.targetX=90+Math.random()*(canvas.width-180); b.targetY=90+Math.random()*(canvas.height-300);} 
-    const steerX=(dxTarget/(dist||1))*24; const steerY=(dyTarget/(dist||1))*18; b.vx+=steerX*dt; b.vy+=steerY*dt;
-    const dxPlayer=b.x-p.x, dyPlayer=b.y-p.y; const dPlayer=Math.hypot(dxPlayer,dyPlayer);
-    if(game.running && dPlayer<170){const push=(170-dPlayer)/170; b.vx+=(dxPlayer/(dPlayer||1))*180*push*dt; b.vy+=(dyPlayer/(dPlayer||1))*140*push*dt; b.targetX=90+Math.random()*(canvas.width-180); b.targetY=90+Math.random()*(canvas.height-300);} 
-    for(let j=idx+1;j<game.birds.length;j++){const o=game.birds[j]; if(o.caught) continue; const dx=b.x-o.x, dy=b.y-o.y; const d=Math.hypot(dx,dy); const min=(b.data.size+o.data.size)*.85; if(d<min && d>0){const force=(min-d)/min*38; b.vx+=(dx/d)*force*dt; b.vy+=(dy/d)*force*dt; o.vx-=(dx/d)*force*dt; o.vy-=(dy/d)*force*dt;}}
-    const maxV=150*b.data.speed; const vl=Math.hypot(b.vx,b.vy); if(vl>maxV){b.vx=b.vx/vl*maxV; b.vy=b.vy/vl*maxV;} b.x+=b.vx*dt; b.y+=b.vy*dt + Math.sin(b.flap)*10*dt; if(b.x<42||b.x>canvas.width-42){b.vx*=-1; b.x=Math.max(42,Math.min(canvas.width-42,b.x));} if(b.y<72||b.y>canvas.height-180){b.vy*=-1; b.y=Math.max(72,Math.min(canvas.height-180,b.y));}
-  });
-  game.birds=game.birds.filter(b=>!b.caught);
-  game.particles.forEach(p=>{p.x+=p.vx; p.y+=p.vy; p.vy+=0.12; p.life-=0.03;}); game.particles=game.particles.filter(p=>p.life>0);
-  game.texts.forEach(t=>{t.y-=0.7; t.life-=0.018;}); game.texts=game.texts.filter(t=>t.life>0);
-  updateSideInfo();
-}
-
-function draw(){ const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); drawBackground(); drawGround(); drawBirds(); drawPlayer(); drawFx(); }
-function drawBackground(){ const img=game.bg||imageCache[route().image]; const w=canvas.width,h=canvas.height; if(img&&img.complete&&img.naturalWidth){const scale=Math.max(w/img.naturalWidth,h/img.naturalHeight);const bw=img.naturalWidth*scale,bh=img.naturalHeight*scale; ctx.drawImage(img,(w-bw)/2,(h-bh)/2,bw,bh);} else {const g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#5c8390');g.addColorStop(1,'#20362d');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);} const top=ctx.createLinearGradient(0,0,0,h); top.addColorStop(0,'rgba(0,0,0,.08)'); top.addColorStop(.68,'rgba(0,0,0,.08)'); top.addColorStop(1,'rgba(0,0,0,.42)'); ctx.fillStyle=top; ctx.fillRect(0,0,w,h); // fog layers
-  for(let i=0;i<6;i++){ const x=(i*240 + (game.wind*30)%240)-120; ctx.fillStyle='rgba(255,255,255,.04)'; ctx.beginPath(); ctx.ellipse(x+200,h-120+Math.sin(game.wind+i)*8,180,40,0,0,Math.PI*2); ctx.fill(); }
-}
-function drawGround(){ const w=canvas.width,h=canvas.height; const groundY=h-90; const grad=ctx.createLinearGradient(0,groundY,0,h); grad.addColorStop(0,'rgba(18,42,28,.0)'); grad.addColorStop(1,'rgba(13,34,22,.55)'); ctx.fillStyle=grad; ctx.fillRect(0,groundY,w,h-groundY); ctx.strokeStyle='rgba(255,255,255,.06)'; ctx.beginPath(); ctx.moveTo(0,groundY); for(let x=0;x<=w;x+=80){ctx.quadraticCurveTo(x+40,groundY+Math.sin((x+game.wind*3)/120)*10,x+80,groundY);} ctx.lineTo(w,h); ctx.lineTo(0,h); ctx.closePath(); }
-function drawBirds(){ const list=[...game.birds].sort((a,b)=>a.y-b.y); list.forEach(b=>{ const img=imageCache[b.data.image]; const size=b.data.size*(1+Math.sin(b.flap)*0.03); ctx.save(); ctx.translate(b.x,b.y); ctx.rotate(Math.atan2(b.vy,b.vx)*0.05); ctx.shadowColor='rgba(0,0,0,.34)'; ctx.shadowBlur=16; ctx.fillStyle='rgba(0,0,0,.22)'; ctx.beginPath(); ctx.ellipse(0,size*0.65,size*0.48,size*0.17,0,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0; const iw=size*2.25, ih=size*1.6; ctx.beginPath(); roundRect(ctx,-iw/2,-ih/2,iw,ih,18); ctx.clip(); if(img&&img.complete&&img.naturalWidth){ctx.drawImage(img,-iw/2,-ih/2,iw,ih);} else {ctx.fillStyle='#fff'; ctx.fillRect(-iw/2,-ih/2,iw,ih);} ctx.restore(); // subtle target ring
-      ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(b.x,b.y,size*.48,0,Math.PI*2); ctx.stroke(); }); }
-function drawPlayer(){ const p=game.player; ctx.save(); ctx.translate(p.x,p.y); ctx.scale(p.facing,1); // shadow
-  ctx.fillStyle='rgba(0,0,0,.28)'; ctx.beginPath(); ctx.ellipse(0,28,44,14,0,0,Math.PI*2); ctx.fill();
-  // body
-  const heroTint=hero().id==='kazak'?'#6d4a2c':hero().id==='docent'?'#445766':hero().id==='vitalya'?'#275a79':'#3f4f3a';
-  ctx.fillStyle=heroTint; ctx.beginPath(); roundRect(ctx,-22,-14,44,56,16); ctx.fill();
-  ctx.fillStyle='#d4b192'; ctx.beginPath(); ctx.arc(0,-26,18,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#202a2e'; ctx.beginPath(); ctx.moveTo(-8,-42); ctx.quadraticCurveTo(0,-56,12,-41); ctx.lineTo(12,-34); ctx.lineTo(-10,-34); ctx.closePath(); ctx.fill();
-  // legs
-  ctx.strokeStyle='#241b16'; ctx.lineWidth=7; ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(-10,42); ctx.lineTo(-14,68); ctx.moveTo(10,42); ctx.lineTo(14,68); ctx.stroke();
-  // arms
-  ctx.lineWidth=10; ctx.beginPath(); ctx.moveTo(-18,0); ctx.lineTo(-42,12); ctx.moveTo(18,-2); ctx.lineTo(32,10); ctx.stroke();
-  // net
-  const swingProg=p.swing>0 ? 1-(p.swing/.32) : 0; const angle=(-.9 + swingProg*1.8) * (p.facing>0?1:-1); ctx.save(); ctx.translate(32,10); ctx.rotate(angle); ctx.strokeStyle='#a87b35'; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(56,-38); ctx.stroke(); ctx.beginPath(); ctx.ellipse(72,-52,25,20,-.18,0,Math.PI*2); ctx.strokeStyle='rgba(241,216,154,.9)'; ctx.lineWidth=4; ctx.stroke(); ctx.strokeStyle='rgba(255,255,255,.22)'; ctx.lineWidth=1.5; for(let i=-18;i<=18;i+=9){ctx.beginPath(); ctx.moveTo(61+i*.2,-67); ctx.lineTo(72+i*.1,-37); ctx.stroke();} ctx.restore();
-  ctx.restore(); }
-function drawFx(){ game.particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life); ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();}); game.texts.forEach(t=>{ctx.globalAlpha=Math.max(0,t.life); ctx.fillStyle=t.color; ctx.font='700 20px Inter,Segoe UI,sans-serif'; ctx.fillText(t.text,t.x,t.y);}); ctx.globalAlpha=1; }
-function roundRect(ctx,x,y,w,h,r){ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);} 
-
-function loop(ts){ const now=ts/1000; if(!game.lastTs) game.lastTs=now; const dt=Math.min(0.033,now-game.lastTs); game.lastTs=now; update(dt); draw(); requestAnimationFrame(loop); }
-function toast(text){const el=$('toast'); el.textContent=text; el.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('show'),2100);} 
-
-// interactions
-Array.from(document.querySelectorAll('[data-go]')).forEach(el=>el.addEventListener('click',()=>setScreen(el.dataset.go)));
-$('startBtn').onclick=startRun; $('lureBtn').onclick=useLure; $('resultBtn').onclick=()=>{$('resultModal').classList.remove('open');$('startOverlay').classList.remove('hidden');}; $('actionBtn').onpointerdown=(e)=>{e.preventDefault(); triggerCatch();};
-window.addEventListener('keydown',e=>{keys[e.key]=true; if(e.key===' ') {e.preventDefault(); triggerCatch();}}); window.addEventListener('keyup',e=>keys[e.key]=false);
-const joy=$('joystick'), stick=$('stick');
-function joyPos(clientX,clientY){const r=joy.getBoundingClientRect(); const cx=r.left+r.width/2, cy=r.top+r.height/2; const dx=clientX-cx, dy=clientY-cy; const max=r.width/2-28; const len=Math.hypot(dx,dy); const clamp=len>max?max/len:1; joystick.x=(dx*clamp)/max; joystick.y=(dy*clamp)/max; stick.style.transform=`translate(${joystick.x*36}px, ${joystick.y*36}px)`;}
-joy.addEventListener('pointerdown',e=>{joystick.active=true; joy.setPointerCapture(e.pointerId); joyPos(e.clientX,e.clientY);}); joy.addEventListener('pointermove',e=>{if(joystick.active) joyPos(e.clientX,e.clientY);}); const joyEnd=()=>{joystick.active=false; joystick.x=0; joystick.y=0; stick.style.transform='translate(0,0)';}; joy.addEventListener('pointerup',joyEnd); joy.addEventListener('pointercancel',joyEnd);
-
-$('actionBtn').addEventListener('click',triggerCatch);
-
-renderAll(); applyRoute(false); setScreen('home'); preloadAssets();
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
