@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
   <meta name="theme-color" content="#071316" />
-  <meta name="description" content="Птицелов Deluxe — браузерная игра на Phaser" />
+  <meta name="description" content="Птицелов Infinity — браузерная игра на Phaser с уровнями, сезонами и коллекцией птиц" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Птицелов Deluxe</title>
+  <title>Птицелов Infinity</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -18,95 +18,156 @@
     <div class="boot-card">
       <div class="boot-logo">🪶</div>
       <div class="boot-title">ПТИЦЕЛОВ</div>
-      <div class="boot-sub">DELUXE EDITION</div>
+      <div class="boot-sub">INFINITY EDITION</div>
       <div class="boot-progress"><i id="boot-progress"></i></div>
-      <div class="boot-status" id="boot-status">Подготовка экспедиции…</div>
+      <div class="boot-status" id="boot-status">Загрузка мира…</div>
     </div>
   </div>
 
   <div id="app" class="app hidden">
-    <header class="topbar">
+    <header class="topbar" id="topbar">
       <button class="brand" data-screen="home" aria-label="Главная">
         <span class="brand-mark">🪶</span>
-        <span class="brand-copy"><b>Птицелов</b><small>Deluxe Edition</small></span>
+        <span class="brand-copy"><b>Птицелов</b><small>Infinity</small></span>
       </button>
       <div class="hud-pills">
         <span>🪙 <b id="coinsHud">0</b></span>
         <span>🌾 <b id="feedHud">0</b></span>
         <span>⭐ <b id="levelHud">1</b></span>
-        <span>🐦 <b id="speciesHud">0/8</b></span>
       </div>
-      <nav class="nav">
+      <nav class="desktop-nav">
         <button data-screen="home">Главная</button>
-        <button data-screen="heroes">Герои</button>
-        <button data-screen="locations">Локации</button>
-        <button data-screen="collection">Коллекция</button>
-        <button data-screen="shop">Магазин</button>
-        <button data-screen="quests">Квесты</button>
+        <button data-screen="map">Карта</button>
+        <button data-screen="collection">Птицы</button>
+        <button data-screen="tasks">Задания</button>
+        <button data-screen="more">Ещё</button>
       </nav>
-      <button id="soundToggle" class="sound-btn" title="Звук">🔊</button>
+      <button id="soundToggle" class="icon-btn" title="Звук">🔊</button>
     </header>
 
-    <main>
+    <main id="main">
       <section id="home" class="screen active home-screen">
         <div class="home-hero">
           <div class="home-shade"></div>
           <div class="home-copy">
-            <div class="eyebrow">PHASER · WEBGL · ARCADE PHYSICS</div>
+            <div class="eyebrow">PHASER · 50 УРОВНЕЙ · СЕЗОНЫ · PWA</div>
             <h1>Лови. Собирай.<br>Развивайся.</h1>
-            <p>Полноценная браузерная мини‑игра: выбор героя, красивые локации, физика птиц, комбо, улучшения, редкие трофеи, мобильный джойстик, звуки и сохранение прогресса.</p>
+            <p>Короткие экспедиции, длинная прогрессия: 50 уровней, герои, ежедневные награды, сезон, достижения, боссы и коллекция из 15 птиц.</p>
             <div class="home-actions">
-              <button class="primary xl" id="playNowBtn">▶ Играть</button>
-              <button class="secondary xl" data-screen="heroes">Выбрать героя</button>
+              <button class="primary xl" id="continueBtn">▶ Продолжить</button>
+              <button class="secondary xl" data-screen="map">Карта мира</button>
             </div>
             <div class="home-stats">
               <div><b id="homeCaught">0</b><span>поймано</span></div>
-              <div><b id="homeSpecies">0/8</b><span>видов</span></div>
-              <div><b id="homeBest">0</b><span>лучший рейд</span></div>
-              <div><b id="homeHero">Серёжа</b><span>активный герой</span></div>
+              <div><b id="homeSpecies">0/15</b><span>видов</span></div>
+              <div><b id="homeStars">0</b><span>звёзд</span></div>
+              <div><b id="homeHero">Серёжа</b><span>герой</span></div>
             </div>
           </div>
-          <div id="homeHeroCards" class="home-heroes"></div>
+
+          <div class="home-side-cards mobile-carousel" id="homeCards">
+            <article class="home-mini reward-card snap-card">
+              <div class="mini-icon">🎁</div>
+              <div><div class="eyebrow">ЕЖЕДНЕВНЫЙ БОНУС</div><h3 id="dailyTitle">День 1</h3><p id="dailyText">Возвращайся каждый день — награда растёт.</p></div>
+              <button class="primary" id="dailyClaimBtn">Забрать</button>
+            </article>
+            <article class="home-mini season-card snap-card">
+              <div class="mini-icon">❄️</div>
+              <div><div class="eyebrow">СЕЗОН</div><h3>Северные тропы</h3><p id="seasonHomeText">Уровень сезона 1 / 30</p><div class="progress"><i id="seasonHomeBar"></i></div></div>
+              <button class="secondary" data-screen="season">Открыть</button>
+            </article>
+            <article class="home-mini quest-card snap-card">
+              <div class="mini-icon">🎯</div>
+              <div><div class="eyebrow">СЕГОДНЯ</div><h3 id="dailyQuestHeadline">3 задания</h3><p>Короткие цели на один день с дополнительными наградами.</p></div>
+              <button class="secondary" data-screen="tasks">Задания</button>
+            </article>
+          </div>
         </div>
-        <div class="feature-row">
-          <article><span>🎮</span><h3>Настоящий геймплей</h3><p>Движение героя, сачок, столкновения, уклонение птиц и динамическая камера.</p></article>
-          <article><span>🌦️</span><h3>Живые локации</h3><p>Туман, снег, дождь, частицы и разная атмосфера у каждого маршрута.</p></article>
-          <article><span>🐦</span><h3>Коллекционирование</h3><p>Редкость, награды, фото птиц, счётчик улова и легендарные встречи.</p></article>
-          <article><span>📱</span><h3>Телефон + ПК</h3><p>WASD/стрелки и пробел на ПК, джойстик и кнопка ловли на смартфоне.</p></article>
+      </section>
+
+      <section id="map" class="screen">
+        <div class="screen-head compact-head">
+          <div><div class="eyebrow">КАРТА МИРА</div><h2>50 уровней</h2><p>10 уровней на каждой локации. Каждый десятый — босс.</p></div>
+          <div class="head-actions"><button class="secondary" id="prevChapterBtn">←</button><button class="secondary" id="nextChapterBtn">→</button></div>
+        </div>
+        <div id="chapterCarousel" class="chapter-carousel"></div>
+      </section>
+
+      <section id="collection" class="screen">
+        <div class="screen-head compact-head"><div><div class="eyebrow">ПОЛЕВОЙ ЖУРНАЛ</div><h2>Коллекция птиц</h2><p>Открыто <b id="collectionCount">0</b> из 15 видов.</p></div><div class="pager-label" id="birdPagerLabel">1 / 15</div></div>
+        <div id="birdCarousel" class="card-carousel"></div>
+      </section>
+
+      <section id="tasks" class="screen">
+        <div class="screen-head compact-head"><div><div class="eyebrow">ЦЕЛИ</div><h2>Задания и достижения</h2><p>Короткие, недельные и долгосрочные цели.</p></div></div>
+        <div class="segmented" id="taskTabs"><button class="active" data-task-tab="daily">Сегодня</button><button data-task-tab="weekly">Неделя</button><button data-task-tab="achievements">Достижения</button></div>
+        <div id="taskContent" class="card-carousel task-carousel"></div>
+      </section>
+
+      <section id="more" class="screen">
+        <div class="screen-head compact-head"><div><div class="eyebrow">ПРОГРЕСС</div><h2>Развитие</h2><p>Герои, сезон, магазин и твоя лига.</p></div></div>
+        <div class="more-grid">
+          <button class="more-tile" data-screen="heroes"><span>🧍</span><b>Герои</b><small>Уровни и бонусы</small></button>
+          <button class="more-tile" data-screen="shop"><span>🛒</span><b>Магазин</b><small>Сачок и экипировка</small></button>
+          <button class="more-tile" data-screen="season"><span>❄️</span><b>Сезон</b><small>30 ступеней наград</small></button>
+          <button class="more-tile" data-screen="league"><span>🏆</span><b>Лига</b><small>Офлайн-рейтинг</small></button>
+          <button class="more-tile" data-screen="settings"><span>⚙️</span><b>Настройки</b><small>Звук и сохранение</small></button>
+          <button class="more-tile" data-screen="about"><span>ℹ️</span><b>О версии</b><small>Что нового</small></button>
         </div>
       </section>
 
       <section id="heroes" class="screen">
-        <div class="screen-head"><div><div class="eyebrow">КОМАНДА</div><h2>Выбери героя</h2><p>Бонус героя реально меняет стиль игры.</p></div><button class="primary" data-screen="locations">Дальше →</button></div>
-        <div id="heroGrid" class="hero-grid"></div>
-      </section>
-
-      <section id="locations" class="screen">
-        <div class="screen-head"><div><div class="eyebrow">МАРШРУТ</div><h2>Выбери локацию</h2><p>У каждой свой набор птиц, погода и сложность.</p></div><button class="primary" id="startFromLocationsBtn">Начать рейд</button></div>
-        <div id="locationGrid" class="location-grid"></div>
-      </section>
-
-      <section id="collection" class="screen">
-        <div class="screen-head"><div><div class="eyebrow">ПОЛЕВОЙ ЖУРНАЛ</div><h2>Коллекция птиц</h2><p>Открыто <b id="collectionCount">0</b> из 8 видов.</p></div><button class="primary" data-screen="locations">На маршрут →</button></div>
-        <div id="birdGrid" class="bird-grid"></div>
+        <div class="screen-head compact-head"><div><div class="eyebrow">КОМАНДА</div><h2>Герои</h2><p>Каждый герой имеет собственный уровень и специализацию.</p></div><button class="secondary" data-screen="more">← Назад</button></div>
+        <div id="heroCarousel" class="card-carousel"></div>
       </section>
 
       <section id="shop" class="screen">
-        <div class="screen-head"><div><div class="eyebrow">СНАРЯЖЕНИЕ</div><h2>Магазин</h2><p>Покупай приманку и улучшай характеристики.</p></div></div>
-        <div id="shopGrid" class="shop-grid"></div>
+        <div class="screen-head compact-head"><div><div class="eyebrow">СНАРЯЖЕНИЕ</div><h2>Магазин</h2><p>Улучшения дают ощутимый эффект в экспедициях.</p></div><button class="secondary" data-screen="more">← Назад</button></div>
+        <div id="shopCarousel" class="card-carousel"></div>
       </section>
 
-      <section id="quests" class="screen">
-        <div class="screen-head"><div><div class="eyebrow">ЗАДАНИЯ</div><h2>Квесты</h2><p>Выполняй цели и забирай монеты.</p></div></div>
-        <div id="questGrid" class="quest-grid"></div>
+      <section id="season" class="screen">
+        <div class="screen-head compact-head"><div><div class="eyebrow">СЕЗОН 1</div><h2>Северные тропы</h2><p id="seasonDays">30 дней осталось</p></div><button class="secondary" data-screen="more">← Назад</button></div>
+        <article class="season-progress-card">
+          <div><b id="seasonLevelText">Уровень 1 / 30</b><span id="seasonXpText">0 / 250 XP</span></div>
+          <div class="progress large"><i id="seasonProgressBar"></i></div>
+        </article>
+        <div id="seasonCarousel" class="reward-track"></div>
+      </section>
+
+      <section id="league" class="screen">
+        <div class="screen-head compact-head"><div><div class="eyebrow">ЛИГА ЭКСПЕДИЦИИ</div><h2>Офлайн-рейтинг</h2><p>Твой лучший результат среди соперников на этом устройстве.</p></div><button class="secondary" data-screen="more">← Назад</button></div>
+        <div id="leagueTable" class="league-table"></div>
+      </section>
+
+      <section id="settings" class="screen">
+        <div class="screen-head compact-head"><div><div class="eyebrow">НАСТРОЙКИ</div><h2>Игра и сохранение</h2><p>Управляй звуком и резервной копией прогресса.</p></div><button class="secondary" data-screen="more">← Назад</button></div>
+        <div class="settings-grid">
+          <article class="setting-card"><div><b>Музыка</b><small>Фоновый саундтрек</small></div><input id="musicVolume" type="range" min="0" max="100" value="45"></article>
+          <article class="setting-card"><div><b>Пение птиц</b><small>Лесная атмосфера</small></div><input id="birdsVolume" type="range" min="0" max="100" value="38"></article>
+          <article class="setting-card"><div><b>Эффекты</b><small>Сачок, поимка, награды</small></div><input id="sfxVolume" type="range" min="0" max="100" value="65"></article>
+          <article class="setting-card"><div><b>Резервная копия</b><small>Экспорт/импорт прогресса вручную</small></div><div class="inline-actions"><button class="secondary" id="exportSaveBtn">Экспорт</button><button class="secondary" id="importSaveBtn">Импорт</button></div></article>
+          <article class="setting-card warning"><div><b>Сбросить игру</b><small>Удалит весь прогресс на этом устройстве</small></div><button class="danger" id="resetBtn">Сбросить</button></article>
+        </div>
+      </section>
+
+      <section id="about" class="screen">
+        <div class="screen-head compact-head"><div><div class="eyebrow">INFINITY EDITION</div><h2>Что нового</h2><p>Версия с длинной прогрессией и мобильным интерфейсом без вертикальной прокрутки.</p></div><button class="secondary" data-screen="more">← Назад</button></div>
+        <div class="about-grid mobile-carousel">
+          <article class="about-card snap-card"><span>🗺️</span><h3>50 уровней</h3><p>Пять глав по десять уровней, рост сложности и босс в финале каждой главы.</p></article>
+          <article class="about-card snap-card"><span>🎁</span><h3>Ежедневный цикл</h3><p>7-дневная серия входа, ежедневные и недельные задания.</p></article>
+          <article class="about-card snap-card"><span>🏆</span><h3>Сезон и достижения</h3><p>30 сезонных ступеней, долгосрочные достижения и локальная лига.</p></article>
+          <article class="about-card snap-card"><span>🎧</span><h3>Звук</h3><p>Фоновая музыка, лесной саундскейп, пение птиц, ловля и награды.</p></article>
+        </div>
       </section>
 
       <section id="game-screen" class="screen game-screen">
         <div id="game-wrap" class="game-wrap">
           <div id="phaser-game"></div>
           <div class="game-top-ui">
-            <button id="exitGameBtn" class="glass-btn">← Выйти</button>
-            <div class="run-info"><b id="runLocation">Лес</b><span id="runHero">Серёжа</span></div>
+            <button id="exitGameBtn" class="glass-btn">←</button>
+            <div class="run-info"><b id="runLevel">Ур. 1</b><span id="runLocation">Лес</span></div>
+            <div class="run-objective" id="runObjective">Поймай 5 птиц</div>
             <div class="run-stats">
               <span>⏱ <b id="runTime">60</b></span>
               <span>🐦 <b id="runCaught">0</b></span>
@@ -114,6 +175,7 @@
               <span>🪙 <b id="runCoins">0</b></span>
             </div>
           </div>
+          <div id="bossBar" class="boss-bar hidden"><span>🦅 БЕРКУТ</span><div><i id="bossHp"></i></div></div>
           <div class="game-bottom-ui">
             <div class="joystick" id="joystick"><i id="joystickKnob"></i></div>
             <div class="game-actions">
@@ -124,26 +186,34 @@
           <div id="countdown" class="countdown hidden"></div>
           <div id="run-result" class="run-result hidden">
             <div class="result-card">
-              <div class="trophy">🏆</div>
-              <h2>Экспедиция завершена</h2>
+              <div class="trophy" id="resultIcon">🏆</div>
+              <h2 id="resultTitle">Уровень пройден</h2>
+              <div class="stars" id="resultStars">★☆☆</div>
               <div class="result-number" id="resultCoins">+0 🪙</div>
               <div class="result-lines">
                 <span>Поймано <b id="resultCaught">0</b></span>
-                <span>Новых видов <b id="resultNewSpecies">0</b></span>
-                <span>Макс. комбо <b id="resultCombo">x0</b></span>
+                <span>Комбо <b id="resultCombo">x0</b></span>
+                <span>Сезон XP <b id="resultSeasonXp">+0</b></span>
               </div>
-              <div class="result-actions"><button class="primary" id="againBtn">Ещё рейд</button><button class="secondary" id="resultHomeBtn">В меню</button></div>
+              <div class="result-actions"><button class="primary" id="nextLevelBtn">Следующий</button><button class="secondary" id="againBtn">Повторить</button><button class="secondary" id="resultMapBtn">Карта</button></div>
             </div>
           </div>
         </div>
       </section>
     </main>
+
+    <nav class="bottom-nav" id="bottomNav">
+      <button data-screen="home"><span>⌂</span><small>Главная</small></button>
+      <button data-screen="map"><span>🗺️</span><small>Карта</small></button>
+      <button data-screen="collection"><span>🐦</span><small>Птицы</small></button>
+      <button data-screen="tasks"><span>🎯</span><small>Задания</small></button>
+      <button data-screen="more"><span>•••</span><small>Ещё</small></button>
+    </nav>
   </div>
 
   <div id="toast" class="toast"></div>
-  <div id="phaser-error" class="phaser-error hidden">
-    <div><h2>Не удалось загрузить игровой движок</h2><p>Для первого запуска нужен интернет, потому что Phaser загружается с CDN. На GitHub Pages это происходит автоматически.</p><button onclick="location.reload()" class="primary">Повторить</button></div>
-  </div>
+  <div id="saveModal" class="modal hidden"><div class="modal-card"><h3 id="saveModalTitle">Сохранение</h3><textarea id="saveText" spellcheck="false"></textarea><div class="inline-actions"><button class="secondary" id="saveModalCancel">Закрыть</button><button class="primary" id="saveModalApply">Применить</button></div></div></div>
+  <div id="phaser-error" class="phaser-error hidden"><div><h2>Не удалось загрузить игровой движок</h2><p>Нужен интернет при первом запуске Phaser. После загрузки браузер сможет закэшировать игру.</p><button onclick="location.reload()" class="primary">Повторить</button></div></div>
 
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
   <script src="game.js"></script>

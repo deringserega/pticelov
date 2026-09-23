@@ -1,17 +1,17 @@
-const CACHE='pticelov-deluxe-v1';
-const CORE=[
+const CACHE='pticelov-infinity-v1';
+const LOCAL=[
   './','./index.html','./style.css','./game.js','./manifest.webmanifest',
-  './assets/images/hero-bg.jpg',
-  './assets/images/char-sergey.jpg','./assets/images/char-kazak.jpg','./assets/images/char-docent.jpg','./assets/images/char-vitalya.jpg',
-  './assets/images/loc-forest.jpg','./assets/images/loc-river.jpg','./assets/images/loc-mountains.jpg','./assets/images/loc-swamp.jpg','./assets/images/loc-winter.jpg',
-  './assets/images/bird-sinica.png','./assets/images/bird-vorobey.png','./assets/images/bird-schegol.png','./assets/images/bird-snegir.png','./assets/images/bird-sviristel.png','./assets/images/bird-dyatel.png','./assets/images/bird-sova.png','./assets/images/bird-zimorodok.png',
-  './assets/icons/icon-192.png','./assets/icons/icon-512.png'
+  './assets/icons/icon-192.png','./assets/icons/icon-512.png',
+  './assets/audio/music-loop.wav','./assets/audio/birds-loop.wav','./assets/audio/ui.wav','./assets/audio/net.wav','./assets/audio/catch.wav','./assets/audio/miss.wav','./assets/audio/reward.wav','./assets/audio/boss.wav',
+  './assets/images/hero-bg.webp','./assets/images/char-sergey.webp','./assets/images/char-kazak.webp','./assets/images/char-docent.webp','./assets/images/char-vitalya.webp',
+  './assets/images/loc-forest.webp','./assets/images/loc-river.webp','./assets/images/loc-mountains.webp','./assets/images/loc-swamp.webp','./assets/images/loc-winter.webp',
+  './assets/images/bird-sinica.webp','./assets/images/bird-vorobey.webp','./assets/images/bird-chizh.webp','./assets/images/bird-zelenushka.webp','./assets/images/bird-chechetka.webp','./assets/images/bird-popolzen.webp','./assets/images/bird-kamyshovka.webp','./assets/images/bird-schegol.webp','./assets/images/bird-snegir.webp','./assets/images/bird-uragus.webp','./assets/images/bird-sviristel.webp','./assets/images/bird-dyatel.webp','./assets/images/bird-sova.webp','./assets/images/bird-zimorodok.webp','./assets/images/boss-berkut.webp'
 ];
-self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET') return;
-  event.respondWith(caches.match(event.request).then(hit=>hit||fetch(event.request).then(resp=>{
-    const copy=resp.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return resp;
-  }).catch(()=>hit)));
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(LOCAL)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET')return;
+  e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(res=>{
+    const clone=res.clone();caches.open(CACHE).then(c=>c.put(e.request,clone)).catch(()=>{});return res;
+  }).catch(()=>e.request.mode==='navigate'?caches.match('./index.html'):Promise.reject(new Error('offline')))));
 });
